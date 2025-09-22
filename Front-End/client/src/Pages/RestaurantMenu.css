@@ -1,0 +1,81 @@
+.menu-container {
+  padding: 32px 0;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.menu-container h2 {
+  text-align: center;
+  margin-bottom: 32px;
+  font-size: 2rem;
+  letter-spacing: 1px;
+}
+
+.foods-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 24px;
+  align-items: stretch;
+}
+
+.food-card {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  padding: 20px 18px 18px 18px;
+  text-align: center;
+  transition: transform 0.2s, box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 420px;
+}
+
+.food-card:hover {
+  transform: translateY(-8px) scale(1.03);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+}
+
+.food-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 10px;
+  background: #f6f6f6;
+  margin-bottom: 14px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.food-card h3 {
+  margin: 10px 0 6px;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.food-card p {
+  color: #666;
+  font-size: 15px;
+  margin-bottom: 10px;
+}
+
+.food-card .price {
+  font-weight: bold;
+  color: #ff4d4f;
+  font-size: 1.1rem;
+  margin: 10px 0 14px 0;
+}
+
+.food-card .actions button {
+  background: #ff4d4f;
+  color: #fff;
+  border: none;
+  padding: 10px 22px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.2s;
+}
+
+.food-card .actions button:hover {
+  background: #ff7875;
+}
