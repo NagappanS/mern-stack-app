@@ -1,38 +1,28 @@
 // src/components/Footer.jsx
 import { FaInstagram, FaTwitter, FaLinkedin, FaWhatsapp } from "react-icons/fa";
+import "./Footer.css";
 
 const Footer = () => {
   return (
-    <footer style={{
-      background: "#333",
-      color: "#fff",
-      padding: "20px 40px",
-      display: "flex",
-      justifyContent: "space-between",
-      borderRadius:8,
-      alignItems: "center",
-      flexWrap: "wrap",
-      position: "relative"
-    }}>
-      {/* Social Icons */}
-      <div style={{ display: "flex", gap: 15, marginBottom: 10 }}>
-        <a href="https://instagram.com" target="_blank" rel="noreferrer"><FaInstagram color="#fff" /></a>
-        <a href="https://twitter.com" target="_blank" rel="noreferrer"><FaTwitter color="#fff" /></a>
-        <a href="https://linkedin.com" target="_blank" rel="noreferrer"><FaLinkedin color="#fff" /></a>
-        <a href="https://wa.me/918667496870" target="_blank" rel="noreferrer"><FaWhatsapp color="#fff" /></a>
-      </div>
+    <footer className="site-footer">
+      <div className="footer-inner">
+        <div className="socials">
+          <a href="https://instagram.com" target="_blank" rel="noreferrer"><FaInstagram /></a>
+          <a href="https://twitter.com" target="_blank" rel="noreferrer"><FaTwitter /></a>
+          <a href="https://linkedin.com" target="_blank" rel="noreferrer"><FaLinkedin /></a>
+          <a href="https://wa.me/918667496870" target="_blank" rel="noreferrer"><FaWhatsapp /></a>
+        </div>
 
-      {/* Contact */}
-      <div style={{ fontSize: 14 }}>
-        Contact: +91 8667496870
-      </div>
+        <div className="contact">
+          Contact: +91 8667496870
+        </div>
 
-      {/* Logo at bottom-right */}
-      <div style={{ position: "absolute", bottom: 10, right: 20, cursor: "pointer" }} onClick={() => window.location.href = "/restaurants"}>
-        <img src="../assets/Logo.jpg" alt="Logo" style={{ width: 50, height: 50, borderRadius: "50%" }} />
-      </div>
+        <div className="logo-cta" onClick={() => window.location.href = "/restaurants"}>
+          <img src="../assets/JOY.png" alt="Logo" />
+        </div>
 
-      <p style={{ width: "100%", textAlign: "center", marginTop: 40 }}>&copy; {new Date().getFullYear()} FoodieApp. All rights reserved.</p>
+        <p className="copyright">&copy; {new Date().getFullYear()} JOY SPOON. All rights reserved.</p>
+      </div>
     </footer>
   );
 };

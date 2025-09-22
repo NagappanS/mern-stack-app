@@ -1,0 +1,55 @@
+/* Footer.css */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+
+.site-footer{
+  width: calc(100% - 40px);
+  max-width: 1200px;
+  margin: 36px auto;
+  background: linear-gradient(180deg,#0f0f0f,#151515);
+  color: #fff;
+  padding: 18px 22px;
+  border-radius: 12px;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.2);
+  position: relative;
+  overflow: visible;
+}
+
+.footer-inner{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+}
+
+/* socials */
+.socials a{
+  color:#fff;
+  margin-right:12px;
+  font-size:18px;
+  text-decoration:none;
+  opacity:0.95;
+}
+.socials a:hover{ opacity:1; transform: translateY(-2px); }
+
+/* contact */
+.contact{ font-size:14px; opacity:0.95; }
+
+/* logo bottom-right */
+.logo-cta img{
+  width:54px;
+  height:54px;
+  border-radius:50%;
+  object-fit:cover;
+  cursor:pointer;
+  box-shadow: 0 8px 22px rgba(0,0,0,0.45);
+}
+
+/* copyright centered on small screens */
+.copyright{
+  width:100%;
+  text-align:center;
+  margin-top:14px;
+  opacity:0.8;
+  font-size:13px;
+}
