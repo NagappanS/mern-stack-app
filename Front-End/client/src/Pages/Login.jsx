@@ -17,7 +17,8 @@ const Login = () => {
       const res = await API.post("/auth/login", form);
       localStorage.setItem("token", res.data.token);
       alert("Login Successful");
-      navigate("/restaurants");
+      if (res.data.user.role === "admin") navigate("/admin/dashboard");
+      else navigate("/restaurants");
     } catch (err) {
       console.error(err.response?.data || err.message);
       alert("Login failed");

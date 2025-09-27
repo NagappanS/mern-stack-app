@@ -4,7 +4,7 @@ import API from "../api/API";
 import "./Register.css";
 
 const Register = () => {
-  const [form, setForm] = useState({ name: "", email: "", password: "" });
+  const [form, setForm] = useState({ name: "", email: "", password: "",phone:"" });
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -13,14 +13,17 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const res = await API.post("/auth/register", form);
-      alert("User Registered Successfully");
-      navigate("/login");
-    } catch (err) {
-      console.error(err.response?.data || err.message);
-      alert("Registration failed");
-    }
+  if (form.password.length < 8) return alert("Password must be at least 8 characters");
+  if (form.phone && !/^\d{10}$/.test(form.phone)) return alert("Phone must be 10 digits");
+
+  try {
+    await API.post("/auth/register", form);
+    alert("User Registered Successfully");
+    navigate("/login");
+  } catch (err) {
+    console.error(err.response?.data || err.message);
+    alert(err.response?.data?.message || "Registration failed");
+  }
   };
 
   return (
@@ -51,6 +54,13 @@ const Register = () => {
             placeholder="At least 8 characters"
             onChange={handleChange}
             required
+          />
+          <input
+            type="tel"
+            name="phone"
+            placeholder="10-digit phone number"
+            value={form.phone}
+            onChange={handleChange}
           />
           <button type="submit" className="btn-primary">Sign up</button>
         </form>
