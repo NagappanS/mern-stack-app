@@ -19,6 +19,7 @@ import Foods from "./Pages/Admin/Foods";
 import OrdersAdmin from "./Pages/Admin/OrdersAdmin";
 import Reports from "./Pages/Admin/Reports";
 import Settings from "./Pages/Admin/Settings";
+import ManageAdmin from "./Pages/Admin/ManageAdmin";
 
 function App() {
  const isLoggedIn = !!localStorage.getItem("token");
@@ -95,6 +96,7 @@ function App() {
           <Route path="orders" element={<OrdersAdmin />} />
           <Route path="reports" element={<Reports />} />
           <Route path="settings" element={<Settings />} />
+          <Route path="manage-admins" element={<ManageAdmin />} />
         </Route>
 
         {/* Catch all */}

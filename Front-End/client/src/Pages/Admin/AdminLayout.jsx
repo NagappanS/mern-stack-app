@@ -48,7 +48,7 @@ const AdminLayout = () => {
             {open ? <ChevronLeft /> : <MenuIcon />}
           </IconButton>
           <Typography variant="h6" noWrap component="div">
-            Admin Dashboard
+            Admin Panel
           </Typography>
 
           <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
@@ -81,7 +81,7 @@ const AdminLayout = () => {
           <img
             src="../assets/JOY.png"
             alt="Logo"
-            style={{ width: "120px", margin: "50px" }}
+            style={{ width: "120px",marginTop: "50px",marginBottom: "20px",display:"block"}}
           />
         </Toolbar>
         <List>
@@ -132,6 +132,13 @@ const AdminLayout = () => {
               <Settings />
             </ListItemIcon>
             {open && <ListItemText primary="Settings" />}
+          </ListItem>
+
+          <ListItem button component={Link} to="/admin/manage-admins">
+            <ListItemIcon>
+              <People />
+            </ListItemIcon>
+            {open && <ListItemText primary="Manage Admins" />}
           </ListItem>
         </List>
       </Drawer>

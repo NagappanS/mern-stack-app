@@ -6,6 +6,7 @@ import User from "./models/Users.js";
 import Auth from "./routes/Auth.js";
 import RestaurantRoutes from "./routes/RestaurantsRoutes.js";
 import OrderRoutes from "./routes/OrdersRoutes.js";
+import Admin from "./routes/Admin.js";
 import Stripe from "stripe";
 
 dotenv.config();
@@ -22,6 +23,7 @@ app.use(express.json());
 app.use("/api/auth",Auth);
 app.use("/api",RestaurantRoutes);
 app.use("/api",OrderRoutes);
+app.use("/api/admin",Admin);
 
 // Create user test route
 app.post("/api/users", async (req, res) => {
