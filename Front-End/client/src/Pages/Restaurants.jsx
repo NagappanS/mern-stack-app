@@ -8,6 +8,12 @@ const Restaurants = () => {
   const [rests, setRests] = useState([]);
   const [search, setSearch] = useState("");
 
+  const getImageUrl = (img) => {
+  if (img.startsWith("http")) return img;
+  // API.defaults.baseURL should be set in src/api/API.js
+  return `${API.defaults.baseURL}/uploads/${img}`;
+};
+
   useEffect(() => {
     const load = async () => {
       try {
@@ -47,7 +53,7 @@ const Restaurants = () => {
                 {filtered.map((r) => (
                   <div key={r._id} className="restaurant-card">
                     <div className="restaurant-img">
-                      <img src={`../assets/${r.image}`} alt={r.name} />
+                      <img src={`http://localhost:5000/uploads/${r.image}`}  alt={r.name} />
                     </div>
                     <div className="restaurant-info">
                       <h3>{r.name}</h3>

@@ -52,7 +52,7 @@ const RestaurantMenu = () => {
       <div className="foods-grid">
         {foods.map(f => (
           <div key={f._id} className="food-card">
-            <img src={(`../assets/${f.image}`)}  alt={f.name}/>
+            <img src={(`http://localhost:5000/uploads/${f.image}`)}  alt={f.name}/>
             <h3>{f.name}</h3>
             <p>{f.description}</p>
             <p className="price">₹{f.price}</p>

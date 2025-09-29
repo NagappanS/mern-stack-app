@@ -8,11 +8,17 @@ import RestaurantRoutes from "./routes/RestaurantsRoutes.js";
 import OrderRoutes from "./routes/OrdersRoutes.js";
 import Admin from "./routes/Admin.js";
 import Stripe from "stripe";
+import path from "path";
+import { fileURLToPath } from "url";
 
 dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+// serve uploads folder so frontend can access images at /uploads/<filename>
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Middlewares
 app.use(cors({

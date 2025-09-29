@@ -17,7 +17,7 @@ const Cart = () => {
       <div className="cart-items">
         {cart.items.map(item => (
           <div key={item.foodId} className="cart-item">
-            <img src={(`../assets/${item.image}`)} alt={item.name} className="cart-item-image" />
+            <img src={(`http://localhost:5000/uploads/${item.image}`)} alt={item.name} className="cart-item-image" />
             <div className="cart-item-details">
               <h4>{item.name}</h4>
               <p>₹{item.price} × {item.quantity} = ₹{item.price * item.quantity}</p>
