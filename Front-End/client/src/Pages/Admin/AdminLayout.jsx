@@ -129,7 +129,7 @@ const AdminLayout = () => {
 
           <ListItem button component={Link} to="/admin/settings">
             <ListItemIcon>
-              <Settings />
+              <Settings/>
             </ListItemIcon>
             {open && <ListItemText primary="Settings" />}
           </ListItem>

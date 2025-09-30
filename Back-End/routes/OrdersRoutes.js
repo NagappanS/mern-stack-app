@@ -96,4 +96,42 @@ router.get("/test-token", authMiddleware, (req, res) => {
   res.json({ message: "Token is valid", userId: req.userId });
 });
 
+// Get all orders (Admin)
+router.get("/admin/orders", async (req, res) => {
+  try {
+    const orders = await Order.find()
+      .populate("user", "name email") // show user info
+      .populate({
+        path: "items.food",
+        model: "Food",
+        select: "name price" // <-- include fields you need
+      })
+      .sort({ createdAt: -1 });
+
+    res.json(orders);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Update order status (Admin)
+router.put("/admin/orders/:id/status", async (req, res) => {
+  try {
+    const { status } = req.body;
+    const order = await Order.findByIdAndUpdate(
+      req.params.id,
+      { status },
+      { new: true }
+    )
+      .populate("user", "name email")
+      .populate("items.food");
+
+    if (!order) return res.status(404).json({ error: "Order not found" });
+
+    res.json(order);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 export default router;

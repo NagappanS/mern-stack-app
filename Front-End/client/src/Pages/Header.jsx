@@ -3,19 +3,18 @@ import { useState } from "react";
 import { FaUserCircle, FaSignOutAlt, FaShoppingCart, FaStore, FaClipboardList } from "react-icons/fa";
 import "./Header.css";
 
-const Header = () => {
+const Header = ({ onLogout,name }) => {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
-  const username = localStorage.getItem("username");
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("username");
-    navigate("/login");
+    setDropdownOpen(false);
+    onLogout(); // call App's handleLogout
+    navigate("/login", { replace: true });
   };
-
+  // console.log(user?.name || "No user in localStorage");
   return (
     <header className="site-header">
       <div className="header-inner">
@@ -49,7 +48,7 @@ const Header = () => {
                 onClick={() => setDropdownOpen(!dropdownOpen)}
                 aria-expanded={dropdownOpen}
               >
-                <FaUserCircle className="icon" /> <span className="username">{username}</span>
+                <FaUserCircle className="icon" /> <span className="username">{name}</span>
               </button>
 
               {dropdownOpen && (

@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import API from "../api/API";
 import "./Login.css";
 
-const Login = () => {
+const Login = ({onLogin} ) => {
   const [form, setForm] = useState({ email: "", password: "" });
   const navigate = useNavigate();
 
@@ -15,10 +15,17 @@ const Login = () => {
     e.preventDefault();
     try {
       const res = await API.post("/auth/login", form);
-      localStorage.setItem("token", res.data.token);
-      alert("Login Successful");
-      if (res.data.user.role === "admin") navigate("/admin/dashboard");
-      else navigate("/restaurants");
+      const { token, user } = res.data;
+
+      // Save in App state via callback
+      onLogin(token, user.role,user.name);
+
+      localStorage.setItem("name", user.name); // still store username
+
+      alert("Login successful");
+
+      // Redirect
+      navigate(user.role === "admin" ? "/admin" : "/restaurants", { replace: true });
     } catch (err) {
       console.error(err.response?.data || err.message);
       alert("Login failed");
