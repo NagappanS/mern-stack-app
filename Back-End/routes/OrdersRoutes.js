@@ -4,6 +4,9 @@ import Food from "../models/Food.js";
 import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
 import Stripe from "stripe";
+import User from "../models/Users.js";
+import DeliveryMan from "../models/DeliveryMan.js";
+import { sendEmail } from "../utils/sendEmail.js"; 
 
 dotenv.config();
 const router = express.Router();
@@ -25,10 +28,10 @@ const authMiddleware = (req, res, next) => {
 };
 
 // Place new order
+// Place new order with OTP & delivery man assignment
 router.post("/orders", authMiddleware, async (req, res) => {
   try {
     const { items, deliveryInfo, paymentInfo, location } = req.body;
-    // console.log("Order items:", req.body);
     if (!items?.length) return res.status(400).json({ error: "Items array is required" });
 
     let totalPrice = 0;
@@ -42,6 +45,13 @@ router.post("/orders", authMiddleware, async (req, res) => {
       return res.status(400).json({ error: "Payment not completed" });
     }
 
+    // Assign a delivery man
+    const deliveryMan = await DeliveryMan.findOne({ isAvailable: true });
+    if (!deliveryMan) return res.status(400).json({ error: "No delivery man available" });
+
+    // Generate 6-digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
     const newOrder = new Order({
       user: req.userId,
       items,
@@ -49,23 +59,71 @@ router.post("/orders", authMiddleware, async (req, res) => {
       deliveryInfo,
       paymentInfo,
       location,
+      otp,
+      deliveryMan: deliveryMan._id,
+      status: "pending", // ensure initial status
     });
 
     await newOrder.save();
+
+    // Mark delivery man as unavailable
+    deliveryMan.isAvailable = false;
+    await deliveryMan.save();
+
+    const user = await User.findById(req.userId);
+    console.log("User for email:", user.email);
+    // Send email with OTP
+    await sendEmail(
+      user.email,
+      "Your Food Orders OTP", // user email, make sure to populate req.user or fetch it
+      otp
+    );
+
     res.status(201).json(newOrder);
   } catch (err) {
-    console.log("Order error:", err);
+    console.error("Order error:", err);
     res.status(500).json({ error: err.message });
   }
 });
 
+// Verify OTP and mark order as delivered
+router.post("/orders/:id/verify-otp", async (req, res) => {
+  const { otp } = req.body;
+  try {
+    const order = await Order.findById(req.params.id).populate("deliveryMan");
+    if (!order) return res.status(404).json({ msg: "Order not found" });
+
+    if (order.otp === otp) {
+      order.status = "delivered";
+      await order.save();
+
+      // Mark delivery man as available again
+      if (order.deliveryMan) {
+        order.deliveryMan.isAvailable = true;
+        await order.deliveryMan.save();
+      }
+
+      return res.json({ msg: "OTP verified, order delivered", order });
+    } else {
+      return res.status(400).json({ msg: "Invalid OTP" });
+    }
+  } catch (err) {
+    console.error("OTP verification error:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
 // Get logged-in user's orders
 router.get("/orders", authMiddleware, async (req, res) => {
   try {
-    const orders = await Order.find({ user: req.userId })
-      .populate("items.food")
-      .sort({ createdAt: -1 });
-
+    const orders = await Order.find()
+      .populate("user", "name email") // show user info
+      .populate({
+        path: "items.food",
+        model: "Food",
+        select: "name price"
+      })
     res.json(orders);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -129,6 +187,18 @@ router.put("/admin/orders/:id/status", async (req, res) => {
     if (!order) return res.status(404).json({ error: "Order not found" });
 
     res.json(order);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
+//post delivery man
+router.post("/deliverymen", async (req, res) => {
+  try {
+    const newDM = new DeliveryMan(req.body);
+    await newDM.save();
+    res.status(201).json(newDM);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

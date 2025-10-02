@@ -101,13 +101,13 @@ router.delete("/delete-admin/:id", requireAuth, requireAdmin, async (req, res) =
 router.get("/stats", requireAuth, requireAdmin, async (req, res) => {
   try {
     const pendingOrders = await Order.countDocuments({ status: "pending" });
-    const completedOrders = await Order.countDocuments({ status: "completed" });
+    const completedOrders = await Order.countDocuments({ status: "delivered" });
     const totalUsers = await User.countDocuments();
     const totalRestaurants = await Restaurant.countDocuments();
     const totalFoods = await Food.countDocuments();
 
     const totalRevenue = await Order.aggregate([
-      { $match: { status: "completed" } },
+      { $match: { status: "delivered" } },
       { $group: { _id: null, sum: { $sum: "$totalPrice" } } }
     ]);
 
@@ -117,7 +117,7 @@ router.get("/stats", requireAuth, requireAdmin, async (req, res) => {
     ]);
 
     const revenueByMonth = await Order.aggregate([
-      { $match: { status: "completed" } },
+      { $match: { status: "delivered" } },
       {
         $group: {
           _id: { $month: "$createdAt" },
@@ -129,7 +129,7 @@ router.get("/stats", requireAuth, requireAdmin, async (req, res) => {
 
     const topSellingFoods = await Order.aggregate([
       { $unwind: "$items" },
-      { $group: { _id: "$items.foodName", count: { $sum: "$items.quantity" } } },
+      { $group: { _id: "$items.name", count: { $sum: "$items.quantity" } } },
       { $sort: { count: -1 } },
       { $limit: 5 }
     ]);

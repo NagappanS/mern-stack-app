@@ -1,4 +1,3 @@
-// src/pages/AdminOrders.js
 import React, { useEffect, useState } from "react";
 import {
   Box,
@@ -19,7 +18,12 @@ import {
   InputLabel,
   Button,
   Tabs,
-  Tab
+  Tab,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  TextField,
+  DialogActions,
 } from "@mui/material";
 import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
 import API from "../../api/API";
@@ -30,21 +34,25 @@ const OrdersAdmin = () => {
   const [orders, setOrders] = useState([]);
   const [openRow, setOpenRow] = useState(null);
   const [filter, setFilter] = useState("all");
+  const [otpDialogOpen, setOtpDialogOpen] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [otpInput, setOtpInput] = useState("");
 
-  // Fetch all orders
+  // Fetch all orders (Admin)
   const fetchOrders = async () => {
     try {
-      const res = await API.get("/admin/orders");
+      const res = await API.get("/orders"); // backend path for all orders
+      console.log(res);
       setOrders(res.data);
     } catch (err) {
       console.error(err);
     }
   };
 
-  // Update order status
+  // Update order status manually
   const handleStatusChange = async (id, newStatus) => {
     try {
-      const res = await API.put(`/admin/orders/${id}/status`, {
+      const res = await API.put(`/orders/${id}/status`, {
         status: newStatus,
       });
       setOrders((prev) =>
@@ -52,6 +60,32 @@ const OrdersAdmin = () => {
       );
     } catch (err) {
       console.error(err);
+    }
+  };
+
+  // Open OTP dialog
+  const handleOpenOtpDialog = (order) => {
+    setSelectedOrder(order);
+    setOtpInput("");
+    setOtpDialogOpen(true);
+  };
+
+  // Verify OTP for order delivery
+  const handleVerifyOtp = async () => {
+    try {
+      const res = await API.post(
+        `/orders/${selectedOrder._id}/verify-otp`,
+        { otp: otpInput }
+      );
+      // Update orders state
+      setOrders((prev) =>
+        prev.map((o) => (o._id === selectedOrder._id ? res.data.order : o))
+      );
+      setOtpDialogOpen(false);
+      alert("OTP verified! Order delivered successfully.");
+    } catch (err) {
+      console.error(err);
+      alert(err.response?.data?.msg || "OTP verification failed");
     }
   };
 
@@ -66,11 +100,11 @@ const OrdersAdmin = () => {
 
   return (
     <Box p={3}>
-      <Typography variant="h5" sx = {{fontWeight:"bold",flexGrow: 1}}gutterBottom>
+      <Typography variant="h5" sx={{ fontWeight: "bold" }} gutterBottom>
         Manage Orders
       </Typography>
 
-      {/* Filters */}
+      {/* Filter Tabs */}
       <Tabs
         value={filter}
         onChange={(e, v) => setFilter(v)}
@@ -93,9 +127,11 @@ const OrdersAdmin = () => {
                   <TableCell>User</TableCell>
                   <TableCell>Total Price</TableCell>
                   <TableCell>Status</TableCell>
+                  <TableCell>Delivery Man</TableCell>
                   <TableCell>Actions</TableCell>
                 </TableRow>
               </TableHead>
+
               <TableBody>
                 {filteredOrders.map((order) => (
                   <React.Fragment key={order._id}>
@@ -114,14 +150,18 @@ const OrdersAdmin = () => {
                           )}
                         </IconButton>
                       </TableCell>
+
                       <TableCell>{order._id}</TableCell>
+
                       <TableCell>
                         {order.user?.name} <br />
                         <small>{order.user?.email}</small>
                       </TableCell>
+
                       <TableCell>₹{order.totalPrice}</TableCell>
+
                       <TableCell>
-                        <FormControl size="small">
+                        <FormControl size="small" fullWidth>
                           <InputLabel>Status</InputLabel>
                           <Select
                             value={order.status}
@@ -137,13 +177,24 @@ const OrdersAdmin = () => {
                           </Select>
                         </FormControl>
                       </TableCell>
+
+                      <TableCell>
+                        {order.deliveryMan?._id}
+                      </TableCell>
+
                       <TableCell>
                         <Button
                           variant="outlined"
                           size="small"
-                          onClick={() =>
-                            alert("Future Action: View Invoice/Details")
-                          }
+                          onClick={() => handleOpenOtpDialog(order)}
+                        >
+                          Verify OTP
+                        </Button>
+                        <Button
+                          variant="outlined"
+                          size="small"
+                          sx={{ ml: 1 }}
+                          onClick={() => alert("Future: View Invoice/Details")}
                         >
                           Details
                         </Button>
@@ -153,7 +204,7 @@ const OrdersAdmin = () => {
                     {/* Expandable Items */}
                     <TableRow>
                       <TableCell
-                        colSpan={6}
+                        colSpan={7}
                         style={{ paddingBottom: 0, paddingTop: 0 }}
                       >
                         <Collapse
@@ -196,6 +247,28 @@ const OrdersAdmin = () => {
           </TableContainer>
         </CardContent>
       </Card>
+
+      {/* OTP Verification Dialog */}
+      <Dialog
+        open={otpDialogOpen}
+        onClose={() => setOtpDialogOpen(false)}
+      >
+        <DialogTitle>Verify Delivery OTP</DialogTitle>
+        <DialogContent>
+          <TextField
+            label="Enter OTP"
+            fullWidth
+            value={otpInput}
+            onChange={(e) => setOtpInput(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOtpDialogOpen(false)}>Cancel</Button>
+          <Button variant="contained" onClick={handleVerifyOtp}>
+            Verify
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

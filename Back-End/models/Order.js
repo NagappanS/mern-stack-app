@@ -27,7 +27,9 @@ const orderSchema = new mongoose.Schema({
     type: String,
     enum: ["pending", "preparing", "delivered"],
     default: "pending"
-  }
+  },
+  otp: { type: String ,required : true ,default: () => Math.floor(1000 + Math.random() * 9000) }, 
+  deliveryMan: { type: mongoose.Schema.Types.ObjectId, ref: "DeliveryMan" }
 }, { timestamps: true });
 
 export default mongoose.model("Order", orderSchema);
