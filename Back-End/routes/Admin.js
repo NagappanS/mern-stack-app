@@ -4,6 +4,7 @@ import User from "../models/Users.js";
 import Order from "../models/Order.js";
 import Restaurant from "../models/Restaurant.js";
 import Food from "../models/Food.js";
+import Deliveryman from "../models/DeliveryMan.js";
 import dotenv from "dotenv";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
@@ -233,6 +234,26 @@ router.get("/users", async (req, res) => {
     res.json(users);
   } catch (err) {
     console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+//delivery men 
+//post a deliveryman
+router.post("/delivery-men", requireAuth ,requireAdmin,async (req, res) => {
+  try {
+    const { name, email, password, phone } = req.body;
+    const existing = await Deliveryman.findOne({ email });
+    if (existing) return res.status(400).json({ message: "Email already exists" });  
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newDeliveryman = new Deliveryman({ name, email, password: hashedPassword, phone, role: "delivery" });
+    const newUser = new User({ name, email, password: hashedPassword, phone, role: "delivery"});
+    await newDeliveryman.save();
+    await newUser.save();
+
+    res.status(201).json({ message: "Delivery Man created successfully", newDeliveryman });
+  } catch (err) {
     res.status(500).json({ message: "Server error" });
   }
 });

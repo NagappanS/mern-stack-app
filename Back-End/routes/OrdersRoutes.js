@@ -192,16 +192,4 @@ router.put("/admin/orders/:id/status", async (req, res) => {
   }
 });
 
-
-//post delivery man
-router.post("/deliverymen", async (req, res) => {
-  try {
-    const newDM = new DeliveryMan(req.body);
-    await newDM.save();
-    res.status(201).json(newDM);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
 export default router;

@@ -2,6 +2,7 @@ import express from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../models/Users.js";
+import DeliveryMan from "../models/DeliveryMan.js";
 
 const router = express.Router();
 
@@ -36,6 +37,7 @@ router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
+    const deliveryMan = await DeliveryMan.findOne({ email });
     if (!user) return res.status(401).json({ message: "Invalid credentials" });
 
     if (user.status === "blocked") {
@@ -45,11 +47,25 @@ router.post("/login", async (req, res) => {
     const match = await bcrypt.compare(password, user.password);
     if (!match) return res.status(401).json({ message: "Invalid credentials" });
 
-    const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "8h" });
+    const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "1h" });
 
+    if(user.role === "delivery")
+    {
+      return res.json({
+        token,
+        user: {
+          _id: deliveryMan._id,
+          name: deliveryMan.name,
+          email: deliveryMan.email,
+          role: user.role
+        }
+    });
+  }
+    else {
     return res.json({
       token,
       user: {
+        
         id: user._id,
         name: user.name,
         email: user.email,
@@ -58,6 +74,7 @@ router.post("/login", async (req, res) => {
         phone: user.phone
       }
     });
+  }
   } catch (err) {
     console.error(err);
     return res.status(500).json({ message: "Server error" });

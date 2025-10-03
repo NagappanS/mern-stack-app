@@ -7,6 +7,7 @@ import Auth from "./routes/Auth.js";
 import RestaurantRoutes from "./routes/RestaurantsRoutes.js";
 import OrderRoutes from "./routes/OrdersRoutes.js";
 import Admin from "./routes/Admin.js";
+import Delivery from "./routes/DeliverymenRoutes.js";
 import Stripe from "stripe";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -30,6 +31,7 @@ app.use("/api/auth",Auth);
 app.use("/api",RestaurantRoutes);
 app.use("/api",OrderRoutes);
 app.use("/api/admin",Admin);
+app.use("/api",Delivery);
 
 // Create user test route
 app.post("/api/users", async (req, res) => {

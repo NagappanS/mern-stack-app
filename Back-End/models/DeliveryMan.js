@@ -11,6 +11,7 @@ const deliveryManSchema = new mongoose.Schema({
       message: props => `${props.value} is not a valid phone number!`
     }
   },
+  password : { type: String, required: true },
   isAvailable: { type: Boolean, default: true }, // mark if delivery man is free
   createdAt: { type: Date, default: Date.now },
 });

@@ -20,6 +20,10 @@ import OrdersAdmin from "./Pages/Admin/OrdersAdmin";
 import Reports from "./Pages/Admin/Reports";
 import Settings from "./Pages/Admin/Settings";
 import ManageAdmin from "./Pages/Admin/ManageAdmin";
+import ManageDeliveryMen from "./Pages/Admin/ManageDeliveryMen";
+
+import DeliveryLayout from "./Pages/Admin/DeliveryLayout";
+import DeliveryOrders from "./Pages/Admin/DeliveryOrders";
 
 import Login from "./Pages/Login";
 import Register from "./Pages/Register";
@@ -62,7 +66,8 @@ function App() {
           path="/"
           element={
             isLoggedIn ? (
-              isAdmin ? <Navigate to="/admin" replace /> : <Navigate to="/restaurants" replace />
+              isAdmin ? <Navigate to="/admin" replace /> : 
+              (role === "delivery" ? <Navigate to ="/delivery" replace/> : (role === "user" ? <Navigate to="/restaurants" replace /> : <Navigate to="/login" replace />))
             ) : (
               <Navigate to="/login" replace />
             )
@@ -74,7 +79,7 @@ function App() {
           path="/login"
           element={
             isLoggedIn ? (
-              <Navigate to={isAdmin ? "/admin" : "/restaurants"} replace />
+              <Navigate to={isAdmin ? "/admin" : (role=="delivery" ? "/delivery" : "/restaurants")} replace />
             ) : (
               <Login onLogin={handleLogin} />
             )
@@ -158,7 +163,7 @@ function App() {
           path="/admin/*"
           element={
             <ProtectedRoute token={token} roleRequired="admin" adminOnly>
-              <AdminLayout onLogout={handleLogout} name={name}/>
+              <AdminLayout onLogout={handleLogout} name={name} role={role}/>
             </ProtectedRoute>
           }
         >
@@ -170,7 +175,20 @@ function App() {
           <Route path="reports" element={<Reports />} />
           <Route path="settings" element={<Settings onLogout={handleLogout}/>}/>
           <Route path="manage-admins" element={<ManageAdmin />} />
+          <Route path="manage-deliverymen" element={<ManageDeliveryMen />} />
         </Route>
+        
+        {/* Delivery routes */}
+        <Route
+            path="/delivery/*"
+            element={
+              <ProtectedRoute token={token} roleRequired="delivery">
+                <DeliveryLayout onLogout={handleLogout} name={name} />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<DeliveryOrders />} />
+         </Route>
 
       </Routes>
     </Router>

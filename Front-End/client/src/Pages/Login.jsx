@@ -21,11 +21,15 @@ const Login = ({onLogin} ) => {
       onLogin(token, user.role,user.name);
 
       localStorage.setItem("name", user.name); // still store username
+      localStorage.setItem("deliverymanId", user._id); // store deliverymanId if needed
 
       alert("Login successful");
 
       // Redirect
-      navigate(user.role === "admin" ? "/admin" : "/restaurants", { replace: true });
+      navigate(user.role === "admin" ? "/admin" : 
+      (user.role === "delivery" ? "/delivery" :(
+      user.role === "user" ? "/restaurants" :
+      "/login")), { replace: true });
     } catch (err) {
       console.error(err.response?.data || err.message);
       alert("Login failed");
