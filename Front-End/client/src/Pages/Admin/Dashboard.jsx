@@ -83,7 +83,7 @@ export default function Dashboard() {
         </Grid>
 
         {/* Top Selling Foods */}
-        <Grid item xs={12} md={6}>
+        {/* <Grid item xs={12} md={6}>
           <Card>
             <CardContent>
               <Typography variant="h6">🍕 Top Selling Foods</Typography>
@@ -95,10 +95,10 @@ export default function Dashboard() {
                     nameKey="name"
                     cx="50%"
                     cy="50%"
-                    outerRadius={120}
+                    outerRadius={100}
                     label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
                   >
-                    {charts.topSellingFoods.map((entry, index) => (
+                    {charts.topSellingFoods.map((_, index) => (
                       <Cell key={index} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
@@ -107,7 +107,7 @@ export default function Dashboard() {
               </ResponsiveContainer>
             </CardContent>
           </Card>
-        </Grid>
+        </Grid> */}
       </Grid>
     </Box>
   );

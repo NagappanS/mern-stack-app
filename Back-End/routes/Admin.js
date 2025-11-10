@@ -258,5 +258,61 @@ router.post("/delivery-men", requireAuth ,requireAdmin,async (req, res) => {
   }
 });
 
+router.get("/reports", async (req, res) => {
+  const { timeFrame } = req.query;
+  const now = new Date();
+  let startDate = new Date();
+
+  // define timeframe boundaries
+  if (timeFrame === "weekly") startDate.setDate(now.getDate() - 7);
+  else if (timeFrame === "monthly") startDate.setMonth(now.getMonth() - 1);
+  else startDate.setDate(now.getDate() - 1);
+
+  try {
+    // fetch orders within timeframe
+    const orders = await Order.find({ createdAt: { $gte: startDate } })
+      .populate({
+        path: "items.food",
+        populate: { path: "restaurant", select: "name" },
+      });
+
+    // calculate revenue by restaurant
+    const revenueMap = {};
+    const foodMap = {};
+
+    for (const order of orders) {
+      for (const item of order.items) {
+        const restaurantName = item.food?.restaurant?.name || "Unknown Restaurant";
+        const foodName = item.food?.name || "Unknown Food";
+
+        revenueMap[restaurantName] = (revenueMap[restaurantName] || 0) + order.totalPrice;
+        foodMap[foodName] = (foodMap[foodName] || 0) + item.quantity;
+      }
+    }
+
+    const revenueByRestaurant = Object.entries(revenueMap).map(([restaurant, revenue]) => ({
+      restaurant,
+      revenue,
+    }));
+
+    const mostOrderedItems = Object.entries(foodMap).map(([food, count]) => ({
+      food,
+      count,
+    }));
+
+    // Summary stats
+    const totalOrders = orders.length;
+    const totalRevenue = orders.reduce((acc, o) => acc + o.totalPrice, 0);
+
+    res.json({
+      revenueByRestaurant,
+      mostOrderedItems,
+      summary: { totalOrders, totalRevenue },
+    });
+  } catch (err) {
+    console.error("Error generating report:", err);
+    res.status(500).json({ message: "Server Error" });
+  }
+});
 
 export default router;

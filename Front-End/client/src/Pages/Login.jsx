@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import API from "../api/API";
+import { signInWithGoogle } from "../Firebase";
 import "./Login.css";
 
 const Login = ({onLogin} ) => {
@@ -36,6 +37,35 @@ const Login = ({onLogin} ) => {
     }
   };
 
+  // ✅ Handle Google Login
+  const handleGoogleLogin = async () => {
+    try {
+      const { user, token } = await signInWithGoogle();
+
+      // You can send this token to backend for verification or create user entry
+      const res = await API.post("/auth/google-login", {
+        email: user.email,
+        name: user.displayName,
+        googleId: user.uid,
+      });
+
+      const { token: backendToken, user: dbUser } = res.data;
+
+      onLogin(backendToken, dbUser.role, dbUser.name);
+      localStorage.setItem("name", dbUser.name);
+      localStorage.setItem("deliverymanId", dbUser._id);
+      alert(`Welcome, ${dbUser.name}!`);
+
+      navigate(dbUser.role === "admin" ? "/admin" : 
+      (dbUser.role === "delivery" ? "/delivery" :(
+      dbUser.role === "user" ? "/restaurants" :
+      "/login")), { replace: true });
+    } catch (error) {
+      console.error("Google login error:", error);
+      alert("Google sign-in failed");
+    }
+  };
+
   return (
     <div className="login-container">
       <div className="login-form">
@@ -68,8 +98,16 @@ const Login = ({onLogin} ) => {
 
         <div className="divider">Or</div>
 
-        <button className="btn-google">Sign in with Google</button>
-        <button className="btn-facebook">Sign in with Facebook</button>
+        {/* ✅ Google Login Button */}
+        <button className="btn-google" onClick={handleGoogleLogin}>
+          <img
+            src="https://developers.google.com/identity/images/g-logo.png"
+            alt="Google"
+            style={{ width: "20px", marginRight: "8px" }}
+          />
+          Sign in with Google
+        </button>
+
 
         <p className="signup-text">
           Don’t you have an account? <Link to="/register">Sign up</Link>

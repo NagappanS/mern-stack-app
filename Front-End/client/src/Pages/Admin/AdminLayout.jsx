@@ -50,7 +50,7 @@ const AdminLayout = ({ onLogout, name, role }) => {
       {/* Top Navbar */}
       <AppBar
         position="fixed"
-        sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        sx={{ zIndex: (theme) => theme.zIndex.drawer + 1,backgroundColor:"#740C08"}}
       >
         <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
           <IconButton color="inherit" onClick={toggleDrawer}>

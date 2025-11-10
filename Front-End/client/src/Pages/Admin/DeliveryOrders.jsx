@@ -1,5 +1,6 @@
 // src/pages/delivery/DeliveryOrders.jsx
 import { useEffect, useState } from "react";
+import { useNotification } from "../../context/NotificationContext";
 import {
   Box,
   Card,
@@ -25,6 +26,7 @@ const DeliveryOrders = () => {
   const [otpDialogOpen, setOtpDialogOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [otpInput, setOtpInput] = useState("");
+  const { addNotification } = useNotification();
 
   const deliveryManId = localStorage.getItem("deliverymanId");
   console.log("deliveryId",deliveryManId);
@@ -49,6 +51,20 @@ const DeliveryOrders = () => {
     setOtpDialogOpen(true);
   };
 
+  // ✅ Show browser notification after OTP success
+  const showDeliveryNotification = (order) => {
+    if ("Notification" in window && Notification.permission === "granted") {
+      const now = new Date();
+      const time = now.toLocaleTimeString();
+      const date = now.toLocaleDateString();
+
+      new Notification("✅ Order Delivered", {
+        body: `Order ${order._id} for ${order.user?.name} has been delivered.\n${date} at ${time}`,
+        icon: "../assets/JOY.png", // optional custom icon
+      });
+    }
+  };
+
   const handleVerifyOtp = async () => {
     try {
       const res = await API.post(`/orders/${selectedOrder._id}/verify-otp`, {
@@ -58,6 +74,9 @@ const DeliveryOrders = () => {
         prev.map((o) => (o._id === selectedOrder._id ? res.data.order : o))
       );
       setOtpDialogOpen(false);
+      const message = `✅ Order ${selectedOrder._id} for ${selectedOrder.user?.name} has been delivered.`;
+      addNotification(message);
+      showDeliveryNotification(selectedOrder);
       alert("OTP verified ✅. Order delivered.");
     } catch (err) {
       console.error(err);

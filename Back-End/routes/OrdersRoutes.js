@@ -27,6 +27,18 @@ const authMiddleware = (req, res, next) => {
   }
 };
 
+// Get current logged-in user info
+router.get("/me", authMiddleware, async (req, res) => {
+  try {
+    const user = await User.findById(req.userId).select("-password"); // exclude password
+    if (!user) return res.status(404).json({ error: "User not found" });
+    res.json(user);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
 // Place new order
 // Place new order with OTP & delivery man assignment
 router.post("/orders", authMiddleware, async (req, res) => {
@@ -117,13 +129,14 @@ router.post("/orders/:id/verify-otp", async (req, res) => {
 // Get logged-in user's orders
 router.get("/orders", authMiddleware, async (req, res) => {
   try {
-    const orders = await Order.find()
+    const orders = await Order.find({ user: req.userId })
       .populate("user", "name email") // show user info
       .populate({
         path: "items.food",
         model: "Food",
         select: "name price"
       })
+      .sort({ createdAt: -1 });
     res.json(orders);
   } catch (err) {
     res.status(500).json({ error: err.message });

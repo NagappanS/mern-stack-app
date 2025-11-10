@@ -32,6 +32,21 @@ router.post("/register", async (req, res) => {
   }
 });
 
+router.post("/google-login", async (req, res) => {
+  const { email, name, googleId } = req.body;
+  let user = await User.findOne({ email });
+  if (!user) {
+    user = await User.create({ name, email, password: googleId, role: "user" });
+  }
+  if (user.status === "blocked") {
+      return res.status(403).json({ message: "Account blocked. Contact admin." });
+    }
+
+  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "8h" });
+  res.json({ token, user });
+});
+
+
 // Login
 router.post("/login", async (req, res) => {
   try {

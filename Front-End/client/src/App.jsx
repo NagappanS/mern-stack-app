@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { useState } from "react";
+import { NotificationProvider } from "./context/NotificationContext";
 
 import Layout from "./Pages/LayOut";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -60,6 +61,7 @@ function App() {
 
   return (
     <Router>
+        <NotificationProvider>
       <Routes>
         {/* Root redirect */}
         <Route
@@ -191,6 +193,7 @@ function App() {
          </Route>
 
       </Routes>
+         </NotificationProvider>
     </Router>
   );
 }
