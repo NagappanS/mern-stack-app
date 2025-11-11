@@ -19,6 +19,7 @@ const Foods = () => {
 
   const addToCart = (food) => {
     setCart([...cart, food]);
+    alert(`${food.name} added to cart!`);
   };
 
   return (

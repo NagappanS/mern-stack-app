@@ -1,6 +1,7 @@
 import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CartContext } from "../context/CartContext";
+import { useEffect } from "react";
 import API from "../api/API";
 import "./CheckOut.css";
 
@@ -101,6 +102,37 @@ const CheckOut = () => {
   const [deliveryInfo, setDeliveryInfo] = useState({ name: "", phone: "", address: "" });
   const [position, setPosition] = useState(null);
   const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
+
+
+  // Fetch location suggestions from OpenStreetMap Nominatim
+  useEffect(() => {
+    const fetchSuggestions = async () => {
+      if (searchQuery.length < 3) {
+        setSuggestions([]);
+        return;
+      }
+      try {
+        const res = await fetch(
+          `https://nominatim.openstreetmap.org/search?format=json&q=${searchQuery}`
+        );
+        const data = await res.json();
+        setSuggestions(data);
+      } catch (err) {
+        console.error("Location search failed:", err);
+      }
+    };
+
+    const delayDebounce = setTimeout(fetchSuggestions, 500);
+    return () => clearTimeout(delayDebounce);
+  }, [searchQuery]);
+
+  const handleSelectLocation = (item) => {
+    setPosition([parseFloat(item.lat), parseFloat(item.lon)]);
+    setSearchQuery(item.display_name);
+    setSuggestions([]);
+  };
 
   const handleChange = (e) => {
     setDeliveryInfo({ ...deliveryInfo, [e.target.name]: e.target.value });
@@ -185,6 +217,31 @@ const placeOrder = async (paymentInfo) => {
           value={deliveryInfo.address}
           onChange={handleChange}
         />
+
+        {/* Search Location Input */}
+          <div className="location-search">
+            <input
+              type="text"
+              placeholder="Search location"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="search-box"
+            />
+            {suggestions.length > 0 && (
+              <ul className="suggestions-list">
+                {suggestions.map((item, index) => (
+                  <li
+                    key={index}
+                    onClick={() => handleSelectLocation(item)}
+                    className="suggestion-item"
+                  >
+                    {item.display_name}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+
 
         <h3>Select Delivery Location</h3>
         <MapContainer

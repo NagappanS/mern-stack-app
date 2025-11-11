@@ -22,10 +22,11 @@ const __dirname = path.dirname(__filename);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Middlewares
-app.use(cors({
-  origin: "http://localhost:5173", // your Vite frontend
-  credentials: true,               // if using cookies/sessions
-}));
+// app.use(cors({
+//   origin: "http://localhost:5173", // your Vite frontend
+//   credentials: true,               // if using cookies/sessions
+// }));
+app.use(cors());
 app.use(express.json());
 app.use("/api/auth",Auth);
 app.use("/api",RestaurantRoutes);
@@ -55,6 +56,16 @@ mongoose.connect(process.env.MONGO_URI, {
 app.get("/", (req, res) => {
     res.send("🍔 Food Delivery API Running 🚀");
 });
+
+// -------------------- SERVE FRONTEND IN PRODUCTION --------------------
+if (process.env.NODE_ENV === "production") {
+  const clientBuildPath = path.join(__dirname, "../Front-End/client/build");
+  app.use(express.static(clientBuildPath));
+
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(clientBuildPath, "index.html"));
+  });
+}
 
 app.listen(PORT, () => {
     console.log(`✅ Server running on port ${PORT}`);

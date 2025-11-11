@@ -103,7 +103,7 @@ const Login = ({onLogin} ) => {
           <img
             src="https://developers.google.com/identity/images/g-logo.png"
             alt="Google"
-            style={{ width: "20px", marginRight: "8px" }}
+            style={{ width: "20px", marginRight: "8px",verticalAlign: "middle" }}
           />
           Sign in with Google
         </button>
