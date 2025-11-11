@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "start": "cd Back-End && node server.js",
+    "start": "cd Back-End && npm install && node server.js",
     "build": "cd Front-End/client && npm install && npm run build"
   },
   "engines": {
