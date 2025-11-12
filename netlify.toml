@@ -1,0 +1,24 @@
+
+# Netlify Build Configuration
+# ===============================
+
+[build]
+  base = "Front-End/client"   # Folder where your React app lives
+  publish = "build"           # Output folder after npm run build
+  command = "npm run build"   # Build command
+
+# ===============================
+# Environment Variables (Optional)
+# ===============================
+# You can safely use test API keys here for hobby projects
+# or set them in Netlify UI (Site Settings → Environment Variables)
+# ===============================
+# Redirects (Optional)
+# ===============================
+# If using React Router, uncomment this block to fix "Page Not Found" on refresh
+# It makes all unknown routes fallback to index.html
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
